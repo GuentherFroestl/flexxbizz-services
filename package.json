@@ -1,0 +1,42 @@
+{
+  "name": "@flexxbizz/services",
+  "version": "0.0.1",
+  "description": "Rest Services for flexxbizz",
+  "main": "main.ts",
+  "scripts": {
+    "build": "tsc",
+    "compile": "tsc --noEmit",
+    "test": "test",
+    "serve": "node --harmony ./dist/bootstrap.js -p 3000",
+    "start": "npm run build && npm run serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuentherFroestl/flexxbizz-services.git"
+  },
+  "keywords": [
+    "rest",
+    "services",
+    "bizz"
+  ],
+  "author": "Guenther Froestl",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GuentherFroestl/flexxbizz-services/issues"
+  },
+  "homepage": "https://github.com/GuentherFroestl/flexxbizz-services#readme",
+  "dependencies": {
+    "koa-body": "^2.0.0",
+    "koa-router": "^7.1.0",
+    "minimist": "^1.2.0",
+    "mongodb": "^2.2.19"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.0.37",
+    "@types/koa-router" : "^7.0.0",
+    "@types/mongodb": "^2.1.36",
+    "@types/node": "^6.0.57",
+    "@types/minimist": "^1.2.0"
+  }
+}
+
