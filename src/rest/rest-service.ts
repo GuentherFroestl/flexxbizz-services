@@ -2,12 +2,12 @@
  * Created by gfr on 05.01.17.
  */
 const Koa = require('koa');
-const koaBody = require('koa-body');
-const router = require('koa-router')();
-
+const mainRouter = require('koa-router')();
+import {DbHandler, addDbHandlerToCtx} from "../persistence/shared/index";
 import {exceptionHandler} from '../exception-handling';
 import {loggingHandler} from '../logging';
 import {persistenceRouter} from '../persistence';
+
 
 
 export class KoaApp {
@@ -18,40 +18,24 @@ export class KoaApp {
      * Construct app with some parameters supplied.
      * @param port
      */
-    constructor(private port: number = 3000) {
+    constructor(private port: number = 3000, dbHandler: DbHandler) {
         this.app = new Koa();
 
-        router
+        mainRouter
             .get('/', function (ctx, next) {
                 ctx.body = 'Hello World!';
             })
             .get('/error', function (ctx, next) {
                 throw Error('Error handling works!');
-            })
-            .get('/users', function (ctx, next) {
-                ctx.body = 'Hello Users!';
-            })
-            .get('/async', async(ctx, next) => {
-                ctx.body = 'Hello async op!';
-            })
-            .post('/users', koaBody, function (ctx, next) {
-                console.log(ctx.request.body);
-                // ...
-            })
-            .put('/users/:id', koaBody, function (ctx, next) {
-                console.log(ctx.request.body);
-                // ...
-            })
-            .del('/users/:id', function (ctx, next) {
-                // ...
             });
 
         this.app
             .use(loggingHandler)
             .use(exceptionHandler)
+            .use(addDbHandlerToCtx(dbHandler))
             .use(persistenceRouter.routes())
-            .use(router.routes())
-            .use(router.allowedMethods());
+            .use(mainRouter.routes())
+            .use(mainRouter.allowedMethods());
     }
 
     listen = () => {
