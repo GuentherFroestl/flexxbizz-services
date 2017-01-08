@@ -3,7 +3,7 @@
  */
 const Koa = require('koa');
 const mainRouter = require('koa-router')();
-import {DbHandler, addDbHandlerToCtx} from "../persistence/shared/index";
+import {PersistenceHandler, addDbHandlerToCtx} from "../persistence/shared/index";
 import {exceptionHandler} from '../exception-handling';
 import {loggingHandler} from '../logging';
 import {persistenceRouter} from '../persistence';
@@ -18,7 +18,7 @@ export class KoaApp {
      * Construct app with some parameters supplied.
      * @param port
      */
-    constructor(private port: number = 3000, dbHandler: DbHandler) {
+    constructor(private port: number = 3000, dbHandler: PersistenceHandler) {
         this.app = new Koa();
 
         mainRouter

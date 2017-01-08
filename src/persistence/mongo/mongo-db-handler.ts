@@ -1,7 +1,7 @@
 /**
  * Created by gfr on 07.01.17.
  */
-import {DbHandler} from "../shared/index";
+import {PersistenceHandler} from "../shared/index";
 const mongoDb = require('mongodb');
 const mongoClient = mongoDb.MongoClient;
 const mongoObjectID = mongoDb.ObjectID;
@@ -9,7 +9,7 @@ const mongoObjectID = mongoDb.ObjectID;
 /**
  * Provider for mongoClient Connection.
  */
-export class MongoDbHandler implements DbHandler {
+export class MongoDbHandler implements PersistenceHandler {
 
 
     private connection;
@@ -26,9 +26,8 @@ export class MongoDbHandler implements DbHandler {
         if (!this.connection) {
             console.info('try to get db-connection');
             this.connection = await mongoClient.connect(this.dbUrl);
-            console.info('got db-connection');
+            console.info('got new db-connection');
         }
-        console.info('got db-connection');
         return this.connection;
     };
 
@@ -41,10 +40,11 @@ export class MongoDbHandler implements DbHandler {
 
     async listEntities(collectionName: string, offset: number, limit: number): Promise<any[]> {
         let conn = await this.connect();
-        console.info('got db-connection');
         let collection = conn.collection(collectionName);
-        let result = await collection.find().skip(offset).limit(limit).toArray();
-        console.info('got db-connection');
+        let findResult = await collection.find();
+        let count = await findResult.count();
+        console.info('find result count:', count);
+        let result = await findResult.skip(offset).limit(limit).toArray();
         return result;
     }
 
@@ -59,21 +59,28 @@ export class MongoDbHandler implements DbHandler {
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
         let cmdResult = await collection.insertOne(object);
-        console.info('insert object result :', cmdResult.result,cmdResult.ops);
+        console.info('insert object result :', cmdResult.result, cmdResult.ops);
         return {id: object._id};
     }
 
-    async updateEntity(collectionName: string, object: any, id: string): Promise<any> {
-        if (!object || !id) {
-            throw new Error("Entity and id to be saved must be not null or undefined");
+    async updateEntity(collectionName: string, entity: any, id: string): Promise<any> {
+        if (!entity || !id) {
+            throw new Error("Entity and id to be updated must be not null or undefined");
         }
-        object._id = id;
-        console.info('insert object :', object);
+        console.info('update object :', entity);
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
-        let result = await collection.insertOne(object);
-        console.info('insert object result :', result);
-        return {id: object._id};
+        let obj_id = mongoObjectID(id);
+        let uObj = Object.assign({}, entity, {_id: obj_id});
+        let cmdResult = await collection.updateOne(
+            {"_id": mongoObjectID(obj_id)},
+            uObj
+        );
+        console.info('update object result :', cmdResult.result);
+        return {
+            cmdResult: cmdResult.result,
+            entity: uObj
+        };
     }
 
     async getEntity(collectionName: string, id: string): Promise<any> {
@@ -83,8 +90,26 @@ export class MongoDbHandler implements DbHandler {
         console.info('retrieve object by id:', id);
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
-        let result = await collection.find({_id: id}).limit(1);
-        console.info('found object :', result);
-        return result
+        let result: any[] = await collection.find({_id: mongoObjectID(id)}).limit(1).toArray();
+        console.info('found objects :', result);
+        if (result || result.length > 0) {
+            return result[0];
+        } else {
+            return undefined;
+        }
+
+    }
+
+    async deleteEntity(collectionName: string, id: string): Promise<any> {
+        if (!id) {
+            throw new Error("id of for requested entity must be defined");
+        }
+        console.info('delete object by id:', id);
+        let conn = await this.connect();
+        let collection = conn.collection(collectionName);
+        let cmdResult = await collection.deleteOne(
+            {_id: mongoObjectID(id)}
+        );
+        console.info('delete object result :', cmdResult.result);
     }
 }

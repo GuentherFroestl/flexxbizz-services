@@ -1,14 +1,16 @@
 /**
  * Created by gfr on 07.01.17.
  */
-
-export interface DbHandler {
+/**
+ * Interface for persistence CRUDL handling
+ */
+export interface PersistenceHandler {
     closeConnection(): void;
     listEntities(collectionName: string, offset: number, limit: number): Promise<any[]>;
     saveEntity(collectionName: string, object: any): Promise<any>;
     updateEntity(collectionName: string, object: any, id: string): Promise<any>;
     getEntity(collectionName: string, id: string): Promise<any>;
-
+    deleteEntity(collectionName: string, id: string): Promise<any>;
 }
 
 export const collectionHandler = async(ctx, next) => {
@@ -22,7 +24,7 @@ export const collectionHandler = async(ctx, next) => {
  * @param dbHandler
  * @returns {(ctx:any, next:any)=>Promise<undefined>}
  */
-export const addDbHandlerToCtx = (dbHandler: DbHandler): any => {
+export const addDbHandlerToCtx = (dbHandler: PersistenceHandler): any => {
     return async(ctx, next) => {
         ctx.dbHandler = dbHandler;
         console.info('dbHandler added to ctx');
@@ -30,7 +32,7 @@ export const addDbHandlerToCtx = (dbHandler: DbHandler): any => {
     }
 };
 
-export const getDbHandlerFromCtx = (ctx: any): DbHandler => {
+export const getDbHandlerFromCtx = (ctx: any): PersistenceHandler => {
     return ctx.dbHandler;
 };
 /**
