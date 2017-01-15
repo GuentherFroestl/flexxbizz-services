@@ -6,7 +6,10 @@
   "scripts": {
     "build": "tsc",
     "compile": "tsc --noEmit",
-    "test": "test",
+    "delete:t": "rimraf ./test-run/",
+    "compile:t": "tsc -p tsconfig-test.json",
+    "test": "npm run delete:t && npm run compile:t && jasmine",
+    "test:c": "npm run compile:t && istanbul cover ./node_modules/jasmine/bin/jasmine.js",
     "serve": "node --harmony ./dist/bootstrap.js -p 3000",
     "start": "npm run build && npm run serve"
   },
@@ -33,10 +36,14 @@
     "mongodb": "^2.2.19"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.5.40",
     "@types/koa": "^2.0.37",
     "@types/koa-router": "^7.0.0",
+    "@types/minimist": "^1.2.0",
     "@types/mongodb": "^2.1.36",
     "@types/node": "^6.0.57",
-    "@types/minimist": "^1.2.0"
+    "@types/request": "0.0.39",
+    "jasmine": "^2.5.3",
+    "request": "^2.79.0"
   }
 }

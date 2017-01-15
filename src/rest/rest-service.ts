@@ -13,6 +13,7 @@ import {persistenceRouter} from '../persistence';
 export class KoaApp {
 
     app: any;
+    connection: any;
 
     /**
      * Construct app with some parameters supplied.
@@ -39,9 +40,14 @@ export class KoaApp {
     }
 
     listen = () => {
-        this.app.listen(this.port, () => {
+        this.connection=this.app.listen(this.port, () => {
             console.info(`REST Service started on http://localhost:${this.port}`)
         });
     };
+    close = () =>{
+        if (this.connection){
+        this.connection.close();
+        }
+    }
 }
 

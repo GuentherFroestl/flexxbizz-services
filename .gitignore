@@ -3,6 +3,8 @@
 # compiled output
 tmp/
 dist/
+lib/
+test-run/
 
 # dependencies
 node_modules
