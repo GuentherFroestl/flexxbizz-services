@@ -2,6 +2,8 @@
  * Created by gfr on 07.01.17.
  */
 import {PersistenceHandler} from "../shared/index";
+import {DomainServiceQuery} from '@flexxbizz/generic';
+import {Cursor} from "mongodb";
 const mongoDb = require('mongodb');
 const mongoClient = mongoDb.MongoClient;
 const mongoObjectID = mongoDb.ObjectID;
@@ -38,13 +40,21 @@ export class MongoDbHandler implements PersistenceHandler {
         }
     }
 
-    async listEntities(collectionName: string, offset: number, limit: number): Promise<any[]> {
+    async queryEntities(collectionName: string, query: DomainServiceQuery): Promise<any[]> {
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
-        let findResult = await collection.find();
+        let mdbq = {};
+        if (query.textSearch) {
+            mdbq = {
+                $text: {
+                    $search: query.textSearch
+                }
+            };
+        }
+        let findResult = await collection.find(mdbq);
         let count = await findResult.count();
         console.info('find result count:', count);
-        let result = await findResult.skip(offset).limit(limit).toArray();
+        let result = await findResult.skip(query.pagination.offset).limit(query.pagination.limit).toArray();
         return result;
     }
 

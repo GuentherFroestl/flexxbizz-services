@@ -10,7 +10,7 @@
     "compile:t": "tsc -p tsconfig-test.json",
     "test": "npm run delete:t && npm run compile:t && jasmine",
     "test:c": "npm run compile:t && istanbul cover ./node_modules/jasmine/bin/jasmine.js",
-    "serve": "node --harmony ./dist/bootstrap.js -p 3000",
+    "serve": "tsc && node --harmony ./dist/bootstrap.js -p 3000",
     "start": "npm run build && npm run serve"
   },
   "repository": {
@@ -33,7 +33,8 @@
     "koa-body": "^2.0.0",
     "koa-router": "^7.1.0",
     "minimist": "^1.2.0",
-    "mongodb": "^2.2.19"
+    "mongodb": "^2.2.19",
+    "@flessbizz/generic": "~0.0.1"
   },
   "devDependencies": {
     "@types/jasmine": "^2.5.40",

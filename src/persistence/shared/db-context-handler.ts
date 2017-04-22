@@ -1,12 +1,13 @@
 /**
  * Created by gfr on 07.01.17.
  */
+import {DomainServiceQuery} from '@flexxbizz/generic';
 /**
  * Interface for persistence CRUDL handling
  */
 export interface PersistenceHandler {
     closeConnection(): void;
-    listEntities(collectionName: string, offset: number, limit: number): Promise<any[]>;
+    queryEntities(collectionName: string, query: DomainServiceQuery): Promise<any[]>;
     saveEntity(collectionName: string, object: any): Promise<any>;
     updateEntity(collectionName: string, object: any, id: string): Promise<any>;
     getEntity(collectionName: string, id: string): Promise<any>;
@@ -14,6 +15,13 @@ export interface PersistenceHandler {
 }
 
 export const collectionHandler = async(ctx, next) => {
+    addCollectionNameToCtx(ctx.params.collection, ctx);
+    let collName = getCollectionNameFromCtx(ctx);
+    console.info(`got collection:  ${collName}`);
+    await next();
+};
+
+export const queryHandler = async(ctx, next) => {
     addCollectionNameToCtx(ctx.params.collection, ctx);
     let collName = getCollectionNameFromCtx(ctx);
     console.info(`got collection:  ${collName}`);

@@ -2,6 +2,7 @@
  * Created by gfr on 07.01.17.
  */
 import {getCollectionNameFromCtx, PersistenceHandler, getDbHandlerFromCtx} from './';
+import {DomainServiceQuery,ResultPageSecification} from '@flexxbizz/generic';
 var body = require('koa-body')();
 export const crudRouter = require('koa-router')();
 
@@ -9,7 +10,7 @@ crudRouter.get('/', async(ctx, next) => {
     let collectionName = getCollectionNameFromCtx(ctx);
     let handler: PersistenceHandler = getDbHandlerFromCtx(ctx);
     console.info(`List collection ${collectionName}`, "query", ctx.query);
-    let resp = await handler.listEntities(collectionName, getOffset(ctx.query), getLimit(ctx.query));
+    let resp = await handler.queryEntities(collectionName, buildDomainQuery(ctx.query));
     ctx.body = JSON.stringify(resp);
     await next();
 });
@@ -65,10 +66,18 @@ function getLimit(query: any): number {
     return limit;
 }
 
-function getOffset(query: any): number {
-    let offset = 0;
+function buildDomainQuery(query: any): DomainServiceQuery{
+    let dq = new DomainServiceQuery();
+    dq.pagination= new ResultPageSecification();
     if (query.offset) {
-        offset = 0 + query.offset;
+        dq.pagination.offset = Number(query.offset);
     }
-    return offset;
+    if (query.limit) {
+        dq.pagination.limit = Number(query.limit);
+    }
+    if(query.search){
+        dq.textSearch=query.search;
+    }
+    console.info('donaimQuery:',dq);
+    return dq;
 }
