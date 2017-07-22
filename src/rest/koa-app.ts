@@ -19,7 +19,7 @@ export class KoaApp {
      * Construct app with some parameters supplied.
      * @param port
      */
-    constructor(private port: number = 3000, dbHandler: PersistenceHandler) {
+    constructor(private port: number = 3000, private dbHandler: PersistenceHandler) {
         this.app = new Koa();
 
         mainRouter

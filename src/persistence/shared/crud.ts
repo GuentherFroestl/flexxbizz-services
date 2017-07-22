@@ -41,6 +41,8 @@ crudRouter.post('/', body, async(ctx, next) => {
     console.info(`post entity to collection ${collectionName} with payload:`, ctx.request.body);
     let resp = await handler.saveEntity(collectionName, ctx.request.body);
     ctx.body = JSON.stringify(resp);
+    ctx.status=201;
+    ctx.set('_uuid', resp.id);
     console.info("response", ctx.body);
     await next();
 });

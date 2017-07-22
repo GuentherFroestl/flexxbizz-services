@@ -4,9 +4,10 @@
 import {PersistenceHandler} from "../shared/index";
 import {DomainServiceQuery} from '@flexxbizz/generic';
 import {Cursor} from "mongodb";
-const mongoDb = require('mongodb');
-const mongoClient = mongoDb.MongoClient;
-const mongoObjectID = mongoDb.ObjectID;
+//const mongoDb = require('mongodb');
+import * as mongoDb from 'mongodb'
+const mongoClient = new mongoDb.MongoClient();
+const MongoObjectID = mongoDb.ObjectID;
 
 /**
  * Provider for mongoClient Connection.
@@ -63,7 +64,7 @@ export class MongoDbHandler implements PersistenceHandler {
             throw new Error("Entity to be saved must be not null or undefined");
         }
         if (!object._id) {
-            object._id = mongoObjectID();
+            object._id = new MongoObjectID();
         }
         console.info('insert object :', object);
         let conn = await this.connect();
@@ -80,10 +81,10 @@ export class MongoDbHandler implements PersistenceHandler {
         console.info('update object :', entity);
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
-        let obj_id = mongoObjectID(id);
+        let obj_id = MongoObjectID.createFromHexString(id);
         let uObj = Object.assign({}, entity, {_id: obj_id});
         let cmdResult = await collection.updateOne(
-            {"_id": mongoObjectID(obj_id)},
+            {"_id": MongoObjectID.createFromHexString(id)},
             uObj
         );
         console.info('update object result :', cmdResult.result);
@@ -100,7 +101,7 @@ export class MongoDbHandler implements PersistenceHandler {
         console.info('retrieve object by id:', id);
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
-        let result: any[] = await collection.find({_id: mongoObjectID(id)}).limit(1).toArray();
+        let result: any[] = await collection.find({_id: MongoObjectID.createFromHexString(id)}).limit(1).toArray();
         console.info('found objects :', result);
         if (result || result.length > 0) {
             return result[0];
@@ -118,7 +119,7 @@ export class MongoDbHandler implements PersistenceHandler {
         let conn = await this.connect();
         let collection = conn.collection(collectionName);
         let cmdResult = await collection.deleteOne(
-            {_id: mongoObjectID(id)}
+            {_id: MongoObjectID.createFromHexString(id)}
         );
         console.info('delete object result :', cmdResult.result);
     }

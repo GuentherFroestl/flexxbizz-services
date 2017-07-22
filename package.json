@@ -6,11 +6,13 @@
   "scripts": {
     "build": "tsc",
     "compile": "tsc --noEmit",
+
     "delete:t": "rimraf ./test-run/",
     "compile:t": "tsc -p tsconfig-test.json",
     "test": "npm run delete:t && npm run compile:t && jasmine",
+    "test:j": "jasmine",
     "test:c": "npm run compile:t && istanbul cover ./node_modules/jasmine/bin/jasmine.js",
-    "serve": "tsc && node --harmony ./dist/bootstrap.js -p 3000",
+    "serve": "tsc && node --harmony ./dist/bootstrap.js -p 3000 -d mongodb://@192.168.9.163/test?auto_reconnect=true",
     "start": "npm run build && npm run serve"
   },
   "repository": {
@@ -23,18 +25,19 @@
     "bizz"
   ],
   "author": "Guenther Froestl",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GuentherFroestl/flexxbizz-services/issues"
   },
   "homepage": "https://github.com/GuentherFroestl/flexxbizz-services#readme",
   "dependencies": {
+    "koa": "^2.0.0-alpha.8",
     "koa-better-body": "^3.0.2",
     "koa-body": "^2.0.0",
     "koa-router": "^7.1.0",
+    "koa2": "^2.0.0-alpha.7",
     "minimist": "^1.2.0",
-    "mongodb": "^2.2.19",
-    "@flessbizz/generic": "~0.0.1"
+    "mongodb": "^2.2.19"
   },
   "devDependencies": {
     "@types/jasmine": "^2.5.40",
@@ -42,9 +45,9 @@
     "@types/koa-router": "^7.0.0",
     "@types/minimist": "^1.2.0",
     "@types/mongodb": "^2.1.36",
-    "@types/node": "^6.0.57",
-    "@types/request": "0.0.39",
+    "@types/node": "^8.0.14",
+    "@types/request": "^2.0.0",
     "jasmine": "^2.5.3",
-    "request": "^2.79.0"
+    "request": "^2.81.0"
   }
 }

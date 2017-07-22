@@ -1,7 +1,7 @@
 /*
  * test the koa app.
  */
-import {KoaApp} from './rest-service';
+import {KoaApp} from './koa-app';
 import {DomainServiceQuery} from '@flexxbizz/generic';
 import {PersistenceHandler} from "../persistence/shared/db-context-handler";
 const request = require('request');
@@ -11,7 +11,7 @@ class TestDb implements PersistenceHandler{
     }
 
     queryEntities(collectionName: string, query: DomainServiceQuery): Promise<any[]> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve:any , reject: any) => {
             return resolve([collectionName,query.pagination.offset,query.pagination.limit,query.textSearch]);
         });
     }
@@ -55,7 +55,8 @@ describe('test the koa app:', () => {
     it('should return an array for persistence/test?offset=0&limit=50', (done) => {
         request.get(base_url+'persistence/test?offset=100&limit=50&search=test', (error:any, response:any, body:any) =>{
             expect(response.statusCode).toBe(200);
-            expect(body).toEqual('["test","0100","050","test"]');
+            console.log(body);
+            expect(body).toEqual('["test",100,50,"test"]');
             done();
         })
     });
