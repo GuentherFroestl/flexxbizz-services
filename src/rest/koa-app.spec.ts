@@ -3,7 +3,7 @@
  */
 import {KoaApp} from './koa-app';
 import {DomainServiceQuery} from '@flexxbizz/generic';
-import {PersistenceHandler} from "../persistence/shared/db-context-handler";
+import {PersistenceHandler} from "../persistence/shared/persistence-handler";
 const request = require('request');
 
 class TestDb implements PersistenceHandler{

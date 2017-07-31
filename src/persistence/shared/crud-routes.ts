@@ -3,8 +3,12 @@
  */
 import {getCollectionNameFromCtx, PersistenceHandler, getDbHandlerFromCtx} from './';
 import {DomainServiceQuery,ResultPageSecification} from '@flexxbizz/generic';
-var body = require('koa-body')();
-export const crudRouter = require('koa-router')();
+import * as KoaBody from 'koa-body';
+import * as Router from 'koa-router';
+
+export const crudRouter = new Router();
+const bodyMW = new KoaBody();
+
 
 crudRouter.get('/', async(ctx, next) => {
     let collectionName = getCollectionNameFromCtx(ctx);
@@ -35,11 +39,12 @@ crudRouter.delete('/:id', async(ctx, next) => {
     await next();
 });
 
-crudRouter.post('/', body, async(ctx, next) => {
+crudRouter.post('/', bodyMW, async(ctx, next) => {
     let collectionName = getCollectionNameFromCtx(ctx);
     let handler: PersistenceHandler = getDbHandlerFromCtx(ctx);
-    console.info(`post entity to collection ${collectionName} with payload:`, ctx.request.body);
-    let resp = await handler.saveEntity(collectionName, ctx.request.body);
+    let reqWithBody: any = ctx.request;
+    console.info(`post entity to collection ${collectionName} with payload:`, reqWithBody.body);
+    let resp = await handler.saveEntity(collectionName, reqWithBody.body);
     ctx.body = JSON.stringify(resp);
     ctx.status=201;
     ctx.set('_uuid', resp.id);
@@ -47,14 +52,15 @@ crudRouter.post('/', body, async(ctx, next) => {
     await next();
 });
 
-crudRouter.put('/:id', body, async(ctx, next) => {
+crudRouter.put('/:id', bodyMW, async(ctx, next) => {
     if (!ctx.params.id) {
         throw new Error("path-param for id must be set for putEntity");
     }
     let collectionName = getCollectionNameFromCtx(ctx);
     let handler: PersistenceHandler = getDbHandlerFromCtx(ctx);
-    console.info(`put entity to collection ${collectionName} with payload:`, ctx.request.body);
-    let resp = await handler.updateEntity(collectionName, ctx.request.body, ctx.params.id);
+    let reqWithBody: any = ctx.request;
+    console.info(`put entity to collection ${collectionName} with payload:`, reqWithBody.body);
+    let resp = await handler.updateEntity(collectionName, reqWithBody.body, ctx.params.id);
     ctx.body = JSON.stringify(resp);
     console.info("response", ctx.body);
     await next();

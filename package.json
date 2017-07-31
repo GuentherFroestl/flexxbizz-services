@@ -12,7 +12,7 @@
     "test": "npm run delete:t && npm run compile:t && jasmine",
     "test:j": "jasmine",
     "test:c": "npm run compile:t && istanbul cover ./node_modules/jasmine/bin/jasmine.js",
-    "serve": "tsc && node --harmony ./dist/bootstrap.js -p 3000 -d mongodb://@192.168.9.163/test?auto_reconnect=true",
+    "serve": "tsc && node --harmony ./dist/bootstrap.js -p 3000 -d mongodb://@192.168.9.160/test?auto_reconnect=true",
     "start": "npm run build && npm run serve"
   },
   "repository": {

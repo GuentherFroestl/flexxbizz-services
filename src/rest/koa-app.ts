@@ -1,19 +1,21 @@
 /**
  * Created by gfr on 05.01.17.
  */
-const Koa = require('koa');
-const mainRouter = require('koa-router')();
+import * as Koa from'koa';
+import * as Router from 'koa-router';
 import {PersistenceHandler, addDbHandlerToCtx} from "../persistence/shared/index";
 import {exceptionHandler} from '../exception-handling';
 import {loggingHandler} from '../logging';
 import {persistenceRouter} from '../persistence';
+import {Server} from "http";
 
+const mainRouter = new Router();
 
 
 export class KoaApp {
 
-    app: any;
-    connection: any;
+    app: Koa;
+    service: Server;
 
     /**
      * Construct app with some parameters supplied.
@@ -40,13 +42,13 @@ export class KoaApp {
     }
 
     listen = () => {
-        this.connection=this.app.listen(this.port, () => {
+        this.service=this.app.listen(this.port, () => {
             console.info(`REST Service started on http://localhost:${this.port}`)
         });
     };
     close = () =>{
-        if (this.connection){
-        this.connection.close();
+        if (this.service){
+        this.service.close();
         }
     }
 }
